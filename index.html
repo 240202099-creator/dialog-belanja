@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dialog Belanja</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#F3F7F6; --surface:#FFFFFF; --ink:#16302F; --muted:#587270; --line:#CFE0DD;
+  --btn:#0F5C5C; --btn-ink:#FFFFFF; --soft:#DCEEEB; --gold:#B8901A; --gold-soft:#FBF1CF; --active:#FFF6D6;
+  --font-ui:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-ar:'Amiri','Noto Naskh Arabic','Traditional Arabic','Geeza Pro',serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1A1A; --surface:#132626; --ink:#E6F2F0; --muted:#9BB6B3; --line:#244140;
+    --btn:#5CC2BB; --btn-ink:#08201F; --soft:#1B3836; --gold:#E3C25A; --gold-soft:#3A3217; --active:#3A3217;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1A1A; --surface:#132626; --ink:#E6F2F0; --muted:#9BB6B3; --line:#244140;
+  --btn:#5CC2BB; --btn-ink:#08201F; --soft:#1B3836; --gold:#E3C25A; --gold-soft:#3A3217; --active:#3A3217;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:16px;line-height:1.5;
+  padding-block:28px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+header{display:flex;flex-direction:column;gap:6px}
+.kicker{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--gold)}
+h1{margin:0;font-size:clamp(28px,6vw,38px);line-height:1.15;font-weight:700;text-wrap:balance}
+.sub{margin:0;color:var(--muted);font-size:15px}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+button{font:inherit;cursor:pointer}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.play-all{display:inline-flex;align-items:center;gap:10px;background:var(--btn);color:var(--btn-ink);border:0;border-radius:999px;padding:12px 22px;font-weight:600;font-size:16px}
+.play-all svg{width:18px;height:18px;fill:currentColor}
+.opt{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+.opt select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.opt input{width:18px;height:18px;accent-color:var(--btn)}
+.status{flex-basis:100%;margin:0;font-size:14px;color:var(--muted);min-height:1.5em}
+.notice{background:var(--gold-soft);border:1px solid var(--gold);border-radius:12px;padding:12px 14px;font-size:14px}
+.dialog{display:flex;flex-direction:column;gap:12px;margin:0;padding:0;list-style:none}
+.line{display:flex;flex-direction:column;gap:4px;max-width:92%}
+.line.penjual{align-self:flex-start}
+.line.pembeli{align-self:flex-end}
+.who{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-inline:6px}
+.line.pembeli .who{text-align:right}
+.bubble{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;transition:background .15s,border-color .15s}
+.line.penjual .bubble{border-top-left-radius:4px}
+.line.pembeli .bubble{border-top-right-radius:4px;background:var(--soft)}
+.line.active .bubble{background:var(--active);border-color:var(--gold)}
+.text{flex:1;min-width:0}
+.ar{font-family:var(--font-ar);font-size:clamp(24px,5.6vw,30px);line-height:1.9;direction:rtl;text-align:right;margin:0}
+.id{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.hide-id .id{display:none}
+.say{flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--btn);display:grid;place-items:center}
+.say svg{width:16px;height:16px;fill:currentColor}
+h2{margin:8px 0 0;font-size:20px;font-weight:700}
+.vocab{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin:0;padding:0;list-style:none}
+.vocab li{min-width:0}
+.vocab button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.vocab .ar{font-size:24px;line-height:1.6;text-align:right}
+.vocab span.m{font-size:14px;color:var(--muted)}
+.task{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:12px;padding:14px 16px}
+.task h2{margin:0 0 6px;font-size:17px}
+.task ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:15px}
+footer{font-size:13px;color:var(--muted);padding-top:4px}
+@media (prefers-reduced-motion:reduce){.bubble{transition:none}}
+html{color-scheme:light}body{margin:0}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <span class="kicker">Tema Pusat Perbelanjaan · Bahasa Arab Kelas 2 MA</span>
+    <h1>Dialog Belanja</h1>
+    <p class="sub">Simak dialog antara penjual dan pembeli sambil membaca naskahnya, lalu tirukan pelafalannya.</p>
+  </header>
+
+  <section class="controls" aria-label="Pengaturan audio">
+    <button class="play-all" id="playAll" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true" id="playIcon"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>
+      <span id="playLabel">Putar dialog</span>
+    </button>
+    <label class="opt" for="rate">Kecepatan
+      <select id="rate">
+        <option value="0.6">Pelan</option>
+        <option value="0.8" selected>Sedang</option>
+        <option value="1">Normal</option>
+      </select>
+    </label>
+    <label class="opt" for="showId"><input type="checkbox" id="showId" checked> Terjemahan</label>
+    <p class="status" id="status" role="status" aria-live="polite">Ketuk tombol putar, atau ketuk ikon speaker di tiap kalimat.</p>
+  </section>
+
+  <div class="notice" id="notice" hidden></div>
+
+  <ol class="dialog" id="dialog"></ol>
+
+  <h2>Kosakata Penting</h2>
+  <ul class="vocab" id="vocab"></ul>
+
+  <section class="task">
+    <h2>Praktik berpasangan</h2>
+    <ol>
+      <li>Simak audio dua kali sambil membaca naskah.</li>
+      <li>Tirukan pelafalan tiap kalimat.</li>
+      <li>Bagi peran: satu menjadi penjual, satu menjadi pembeli.</li>
+      <li>Ganti barang dan harganya, lalu ulangi dialog dengan bilangan yang benar.</li>
+    </ol>
+  </section>
+
+  <footer>Rosita Hayati · 240202099 · TAM02. Suara dibuat oleh pembaca suara (text-to-speech) di perangkat.</footer>
+</main>
+
+<script>
+(function(){
+  var LINES=[
+    ['Penjual','اَلسَّلَامُ عَلَيْكُمْ، أَهْلًا وَسَهْلًا. أَيُّ خِدْمَةٍ؟','Assalamu\'alaikum, selamat datang. Ada yang bisa dibantu?'],
+    ['Pembeli','وَعَلَيْكُمُ السَّلَامُ. أُرِيدُ حَقِيبَةً وَكُتُبًا.','Wa\'alaikumussalam. Saya mau tas dan buku.'],
+    ['Penjual','تَفَضَّلْ. هَذِهِ حَقِيبَةٌ جَمِيلَةٌ.','Silakan. Ini tas yang bagus.'],
+    ['Pembeli','بِكَمْ هَذِهِ الْحَقِيبَةُ؟','Berapa harga tas ini?'],
+    ['Penjual','بِأَرْبَعِينَ أَلْفَ رُوبِيَّةٍ.','Empat puluh ribu rupiah.'],
+    ['Pembeli','وَالْكِتَابُ الْوَاحِدُ بِكَمْ؟','Kalau satu buku berapa?'],
+    ['Penjual','الْكِتَابُ الْوَاحِدُ بِعِشْرِينَ أَلْفَ رُوبِيَّةٍ.','Satu buku dua puluh ribu rupiah.'],
+    ['Pembeli','آخُذُ ثَلَاثَةَ كُتُبٍ وَحَقِيبَةً وَاحِدَةً. كَمِ الْمَجْمُوعُ؟','Saya ambil tiga buku dan satu tas. Berapa totalnya?'],
+    ['Penjual','الْمَجْمُوعُ مِائَةُ أَلْفِ رُوبِيَّةٍ.','Totalnya seratus ribu rupiah.'],
+    ['Pembeli','هَلْ يُوجَدُ تَخْفِيضٌ؟','Apakah ada diskon?'],
+    ['Penjual','نَعَمْ، لَكَ تَخْفِيضٌ. الْمَجْمُوعُ تِسْعُونَ أَلْفَ رُوبِيَّةٍ.','Ya, kamu dapat diskon. Totalnya sembilan puluh ribu rupiah.'],
+    ['Pembeli','تَفَضَّلْ تِسْعُونَ أَلْفَ رُوبِيَّةٍ. شُكْرًا.','Ini sembilan puluh ribu rupiah. Terima kasih.'],
+    ['Penjual','عَفْوًا. مَعَ السَّلَامَةِ.','Sama-sama. Sampai jumpa.']
+  ];
+  var VOCAB=[
+    ['حَقِيبَةٌ','tas'],['كِتَابٌ','buku'],['كُتُبٌ','buku-buku'],['بِكَمْ؟','berapa harganya?'],
+    ['رُوبِيَّةٌ','rupiah'],['أَلْفٌ','seribu'],['تَخْفِيضٌ','diskon'],['الْمَجْمُوعُ','total']
+  ];
+  var PLAY='<path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/>';
+  var STOP='<rect x="6" y="6" width="12" height="12" rx="2"/>';
+  var SPEAKER='<path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/>';
+
+  var dialogEl=document.getElementById('dialog'), vocabEl=document.getElementById('vocab');
+  var statusEl=document.getElementById('status'), noticeEl=document.getElementById('notice');
+  var playBtn=document.getElementById('playAll'), playLabel=document.getElementById('playLabel'), playIcon=document.getElementById('playIcon');
+  var rateEl=document.getElementById('rate'), showId=document.getElementById('showId');
+  var synth=('speechSynthesis' in window)?window.speechSynthesis:null;
+  var voices=[], playing=false, current=-1, token=0;
+
+  dialogEl.innerHTML=LINES.map(function(l,i){
+    var k=l[0].toLowerCase();
+    return '<li class="line '+k+'" id="line'+i+'"><span class="who">'+l[0]+'</span>'+
+      '<div class="bubble"><div class="text"><p class="ar" lang="ar" dir="rtl">'+l[1]+'</p><p class="id">'+l[2]+'</p></div>'+
+      '<button class="say" type="button" data-i="'+i+'" aria-label="Putar kalimat '+(i+1)+'"><svg viewBox="0 0 24 24" aria-hidden="true">'+SPEAKER+'</svg></button></div></li>';
+  }).join('');
+  vocabEl.innerHTML=VOCAB.map(function(v,i){
+    return '<li><button type="button" data-v="'+i+'" aria-label="Putar kata '+v[1]+'"><span class="m">'+v[1]+'</span><span class="ar" lang="ar" dir="rtl">'+v[0]+'</span></button></li>';
+  }).join('');
+
+  function refreshVoices(){
+    if(!synth) return;
+    voices=synth.getVoices().filter(function(v){return (v.lang||'').toLowerCase().indexOf('ar')===0;});
+    if(!voices.length){
+      noticeEl.hidden=false;
+      noticeEl.textContent='Perangkat ini belum punya suara bahasa Arab. Coba buka halaman ini di Chrome atau Safari pada HP, atau tambahkan suara Arab di pengaturan bahasa perangkat. Naskah tetap bisa dibaca.';
+    } else { noticeEl.hidden=true; }
+  }
+  if(!synth){
+    noticeEl.hidden=false;
+    noticeEl.textContent='Browser ini belum mendukung pembaca suara. Buka halaman ini di Chrome atau Safari.';
+    playBtn.disabled=true; playBtn.style.opacity='.5';
+  } else {
+    refreshVoices();
+    if(synth.addEventListener) synth.addEventListener('voiceschanged',refreshVoices);
+    else synth.onvoiceschanged=refreshVoices;
+  }
+
+  function setActive(i){
+    if(current>=0){var o=document.getElementById('line'+current); if(o) o.classList.remove('active');}
+    current=i;
+    if(i>=0){var n=document.getElementById('line'+i); if(n){n.classList.add('active'); n.scrollIntoView({block:'nearest',behavior:'smooth'});}}
+  }
+  function setPlaying(on){
+    playing=on;
+    playLabel.textContent=on?'Hentikan':'Putar dialog';
+    playIcon.innerHTML=on?STOP:PLAY;
+  }
+  function utter(text,who,onend){
+    var u=new SpeechSynthesisUtterance(text);
+    u.lang='ar-SA';
+    var penjual=(who==='Penjual');
+    var v=voices.length?(voices.length>1?voices[penjual?0:1]:voices[0]):null;
+    if(v){u.voice=v;u.lang=v.lang;}
+    u.rate=parseFloat(rateEl.value);
+    u.pitch=voices.length>1?1:(penjual?0.85:1.2);
+    u.onend=onend; u.onerror=onend;
+    return u;
+  }
+  function stopAll(){
+    token++;
+    if(synth) synth.cancel();
+    setPlaying(false); setActive(-1);
+    statusEl.textContent='Berhenti. Ketuk putar untuk mengulang.';
+  }
+  function playFrom(i,all){
+    if(!synth) return;
+    var my=++token;
+    synth.cancel();
+    setPlaying(all);
+    function step(k){
+      if(my!==token) return;
+      if(k>=LINES.length){setPlaying(false);setActive(-1);statusEl.textContent='Selesai. Ulangi sekali lagi sambil menirukan.';return;}
+      setActive(k);
+      statusEl.textContent='Memutar: '+LINES[k][0]+' ('+(k+1)+' dari '+LINES.length+')';
+      var u=utter(LINES[k][1],LINES[k][0],function(){
+        if(my!==token) return;
+        if(all){setTimeout(function(){step(k+1);},450);}
+        else {setActive(-1);statusEl.textContent='Ketuk kalimat lain, atau putar seluruh dialog.';}
+      });
+      synth.speak(u);
+    }
+    setTimeout(function(){step(i);},80);
+  }
+  function playWord(i){
+    if(!synth) return;
+    var my=++token;
+    synth.cancel(); setPlaying(false); setActive(-1);
+    statusEl.textContent='Memutar kata: '+VOCAB[i][1];
+    var u=utter(VOCAB[i][0].replace('؟',''),'Penjual',function(){if(my===token) statusEl.textContent='Ketuk kata lain untuk mendengarnya.';});
+    setTimeout(function(){synth.speak(u);},80);
+  }
+
+  playBtn.addEventListener('click',function(){ if(playing){stopAll();} else {playFrom(0,true);} });
+  dialogEl.addEventListener('click',function(e){
+    var b=e.target.closest('button.say'); if(!b) return;
+    playFrom(parseInt(b.getAttribute('data-i'),10),false);
+  });
+  vocabEl.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-v]'); if(!b) return;
+    playWord(parseInt(b.getAttribute('data-v'),10));
+  });
+  showId.addEventListener('change',function(){ dialogEl.classList.toggle('hide-id',!showId.checked); });
+  window.addEventListener('pagehide',function(){ if(synth) synth.cancel(); });
+})();
+</script>
+</body>
+</html>
